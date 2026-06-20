@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: razorpay-clone
+  server:
+    port: 8080
+  datasource:
+    url: jdbc:postgresql://localhost:5432/razorpay-clone-db
+    username: postgres
+    password: Lokesh@123
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
