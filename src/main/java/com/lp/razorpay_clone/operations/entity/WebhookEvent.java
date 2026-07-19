@@ -1,5 +1,6 @@
 package com.lp.razorpay_clone.operations.entity;
 
+import com.lp.razorpay_clone.common.entity.BaseEntity;
 import com.lp.razorpay_clone.common.enums.WebhookEventStatus;
 import com.lp.razorpay_clone.common.enums.WebhookEventsType;
 import jakarta.persistence.*;
@@ -16,7 +17,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "webhook_event")
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class WebhookEvent {
+public class WebhookEvent extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

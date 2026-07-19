@@ -1,5 +1,6 @@
 package com.lp.razorpay_clone.merchant.entity;
 
+import com.lp.razorpay_clone.common.entity.BaseEntity;
 import com.lp.razorpay_clone.common.enums.BusinessType;
 import com.lp.razorpay_clone.common.enums.MerchantStatus;
 import jakarta.persistence.*;
@@ -9,14 +10,17 @@ import lombok.experimental.FieldDefaults;
 import java.util.UUID;
 
 @Entity
-@Table(name = "merchant")
+@Table(name = "merchant",
+        indexes = {
+                @Index(name="idx_merchant_status", columnList = "status")
+        })
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Merchant {
+public class Merchant extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

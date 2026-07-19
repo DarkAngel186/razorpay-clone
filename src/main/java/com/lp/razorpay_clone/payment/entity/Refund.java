@@ -1,5 +1,6 @@
 package com.lp.razorpay_clone.payment.entity;
 
+import com.lp.razorpay_clone.common.entity.BaseEntity;
 import com.lp.razorpay_clone.common.entity.Money;
 import com.lp.razorpay_clone.common.enums.RefundStatus;
 import jakarta.persistence.*;
@@ -17,7 +18,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "refund")
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Refund {
+public class Refund extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

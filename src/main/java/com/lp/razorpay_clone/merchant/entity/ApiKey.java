@@ -1,5 +1,6 @@
 package com.lp.razorpay_clone.merchant.entity;
 
+import com.lp.razorpay_clone.common.entity.BaseEntity;
 import com.lp.razorpay_clone.common.enums.Environment;
 import jakarta.persistence.*;
 import lombok.*;
@@ -9,14 +10,17 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "api_key")
+@Table(name = "api_key",
+        indexes = {
+            @Index(name="idx_api_key_merchant", columnList = "merchant_id, environment, enabled")
+        })
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class ApiKey {
+public class ApiKey extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -46,4 +50,8 @@ public class ApiKey {
     LocalDateTime lastUsedAt;
     LocalDateTime rotatedAt;
     LocalDateTime gracePeriodExpiresAt;
+
+    public boolean isInGracePeriod() {
+        return gracePeriodExpiresAt != null && LocalDateTime.now().isBefore(gracePeriodExpiresAt);
+    }
 }
