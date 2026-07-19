@@ -2,24 +2,24 @@ package com.lp.razorpay_clone.common.entity;
 
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.experimental.FieldDefaults;
 
 @Embeddable
-@FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 @NoArgsConstructor
+@AllArgsConstructor
+@Getter
 public class Money {
 
-    int amountUnits;
-    String currency;
+    private int amountUnits;
+    private String currency;
 
-    private Money(int amountUnits, String currency) {
-        this.amountUnits = amountUnits;
-        this.currency = currency;
+    public static Money of(int amountUnits, String currency) {
+        return new Money(amountUnits, currency);
     }
 
-    public Money of(int amountUnits, String currency) {
-        return new Money(amountUnits, currency);
+    public static Money inr(int amountUnits) {
+        return new Money(amountUnits, "INR");
     }
 
     public Money add(Money money) {

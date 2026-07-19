@@ -1,5 +1,6 @@
 package com.lp.razorpay_clone.operations.entity;
 
+import com.lp.razorpay_clone.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
@@ -14,7 +15,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "dlq_event")
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class DlqEvent {
+public class DlqEvent extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

@@ -5,6 +5,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.time.Instant;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -26,5 +28,28 @@ public class GlobalExceptionHandler {
                         ex.getMessage(),
                         null
                 ));
+    }
+
+    @ExceptionHandler(BusinessRuleViolationException.class)
+    public ResponseEntity<ErrorResponse> handleBusinessRuleViolationException(BusinessRuleViolationException ex) {
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
+                .body(ErrorResponse.of(
+                        ex.getErrorCode(),
+                        ex.getMessage(),
+                        null
+                ));
+    }
+
+    @ExceptionHandler(RateLimitException.class)
+    public ResponseEntity<ErrorResponse> handleRateLimitException(RateLimitException ex) {
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                .header("X-Rate-Limit-Remaining", "0")
+                .header("X-Retry-After-Seconds", String.valueOf(ex.getRetryAfterSeconds()))
+                .header("X-Rate-Limit-Reset", Instant.now().plusSeconds(ex.getRetryAfterSeconds()).toString())
+                .body(ErrorResponse.of(
+                        "RATE_LIMIT_EXCEEDED",
+                        ex.getMessage()
+                        )
+                );
     }
 }

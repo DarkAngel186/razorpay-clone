@@ -1,5 +1,6 @@
 package com.lp.razorpay_clone.payment.entity;
 
+import com.lp.razorpay_clone.common.entity.BaseEntity;
 import com.lp.razorpay_clone.common.entity.Money;
 import com.lp.razorpay_clone.common.enums.OrderStatus;
 import jakarta.persistence.*;
@@ -13,14 +14,19 @@ import java.util.Map;
 import java.util.UUID;
 
 @Entity
-@Table(name = "order_record")
+@Table(name = "order_record",
+        indexes = {
+                @Index(name="idx_order_id_merchant_id", columnList = "id, merchant_id"),
+                @Index(name="idx_order_merchant_id", columnList = "merchant_id")
+        }
+)
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class OrderRecord {
+public class OrderRecord extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -37,6 +43,7 @@ public class OrderRecord {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    @Builder.Default
     OrderStatus status = OrderStatus.CREATED;
 
     @Column(nullable = false)

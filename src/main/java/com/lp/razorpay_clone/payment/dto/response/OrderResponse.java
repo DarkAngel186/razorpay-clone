@@ -12,7 +12,8 @@ public record OrderResponse(
         UUID merchantId,
         String receipt,
         Money amount,
-        OrderStatus orderStatus,
+        OrderStatus status,
+        Integer attempts,
         Map<String, Object> notes,
         LocalDateTime expiresAt,
         LocalDateTime createdAt

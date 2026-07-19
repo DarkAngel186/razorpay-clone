@@ -1,5 +1,6 @@
 package com.lp.razorpay_clone.operations.entity;
 
+import com.lp.razorpay_clone.common.entity.BaseEntity;
 import com.lp.razorpay_clone.common.entity.Money;
 import com.lp.razorpay_clone.common.enums.SettlementStatus;
 import jakarta.persistence.*;
@@ -13,7 +14,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "settlement")
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class Settlement {
+public class Settlement extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

@@ -1,17 +1,22 @@
 package com.lp.razorpay_clone.vault.entity;
 
+import com.lp.razorpay_clone.common.entity.BaseEntity;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Data
+@Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "vault_card")
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class CardToken {
+public class CardToken extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

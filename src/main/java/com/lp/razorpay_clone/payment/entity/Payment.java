@@ -1,10 +1,12 @@
 package com.lp.razorpay_clone.payment.entity;
 
+import com.lp.razorpay_clone.common.entity.BaseEntity;
 import com.lp.razorpay_clone.common.entity.Money;
 import com.lp.razorpay_clone.common.enums.PaymentMethod;
 import com.lp.razorpay_clone.common.enums.PaymentStatus;
 import jakarta.persistence.*;
-import lombok.Data;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
@@ -13,11 +15,19 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 
-@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@Builder
 @Entity
-@Table(name = "payment")
+@Table(name = "payment",
+        indexes = {
+                @Index(name="idx_payment_merchant_id", columnList = "merchant_id"),
+                @Index(name="idx_payment_order_id", columnList = "order_id")
+        })
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class Payment {
+public class Payment extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -33,7 +43,7 @@ public class Payment {
     @Embedded
     Money amount;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false)
     String idempotencyKey;
 
     @Enumerated(EnumType.STRING)
@@ -48,13 +58,12 @@ public class Payment {
     @Column(columnDefinition = "jsonb")
     Map<String, Object> methodDetails;
 
-    @Column(length = 100)
     String bankReference;
 
-    @Column(length = 100)
+    String processorReference;
+
     String errorCode;
 
-    @Column(length = 100)
     String errorDescription;
 
     LocalDateTime authorizedAt;

@@ -1,5 +1,6 @@
 package com.lp.razorpay_clone.operations.entity;
 
+import com.lp.razorpay_clone.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
@@ -8,7 +9,7 @@ import lombok.experimental.FieldDefaults;
 @Entity
 @Table(name = "settlement_payment")
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class SettlementPayment {
+public class SettlementPayment extends BaseEntity {
 
     @EmbeddedId
     SettlementPaymentId id;
