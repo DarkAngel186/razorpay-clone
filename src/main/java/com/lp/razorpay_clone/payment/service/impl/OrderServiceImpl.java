@@ -1,15 +1,18 @@
 package com.lp.razorpay_clone.payment.service.impl;
 
+import com.lp.razorpay_clone.common.enums.EventAggregateType;
 import com.lp.razorpay_clone.common.enums.OrderStatus;
 import com.lp.razorpay_clone.common.exception.BusinessRuleViolationException;
 import com.lp.razorpay_clone.common.exception.DuplicateResourceException;
 import com.lp.razorpay_clone.common.exception.ResourceNotFoundException;
+import com.lp.razorpay_clone.merchant.service.CustomerService;
 import com.lp.razorpay_clone.payment.dto.request.CreateOrderRequest;
 import com.lp.razorpay_clone.payment.dto.response.OrderResponse;
 import com.lp.razorpay_clone.payment.dto.response.PaymentResponse;
 import com.lp.razorpay_clone.payment.entity.OrderRecord;
 import com.lp.razorpay_clone.payment.mapper.OrderMapper;
 import com.lp.razorpay_clone.payment.mapper.PaymentMapper;
+import com.lp.razorpay_clone.payment.outbox.OutboxEventPublisher;
 import com.lp.razorpay_clone.payment.repository.OrderRecordRepository;
 import com.lp.razorpay_clone.payment.repository.PaymentRepository;
 import com.lp.razorpay_clone.payment.service.OrderService;
@@ -20,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -31,6 +35,8 @@ public class OrderServiceImpl implements OrderService {
     private final PaymentRepository paymentRepository;
     private final PaymentMapper paymentMapper;
     private final OrderMapper orderMapper;
+    private final CustomerService customerService;
+    private final OutboxEventPublisher outboxEventPublisher;
 
     @Value("${order.default.expire.time:15}")
     private int defaultOrderExpireTime;
@@ -43,8 +49,17 @@ public class OrderServiceImpl implements OrderService {
             throw new DuplicateResourceException("DUPLICATE_RECEIPT", "Order with receipt: " + order.receipt() + " already exists!!");
         }
 
+        UUID customerId  = null;
+        if(order.customer() != null) {
+            customerId = customerService.findOrCreate(merchantId,
+                    order.customer().name(),
+                    order.customer().email(),
+                    order.customer().phone());
+        }
+
         OrderRecord orderRecord = OrderRecord.builder()
                         .merchantId(merchantId)
+                        .customerId(customerId)
                         .amount(order.amount())
                         .receipt(order.receipt())
                         .notes(order.notes())
@@ -52,6 +67,15 @@ public class OrderServiceImpl implements OrderService {
                         .build();
 
         orderRecord =  orderRecordRepository.save(orderRecord);
+
+        outboxEventPublisher.publish(EventAggregateType.ORDER, orderRecord.getId(), "ORDER_CREATED",
+                Map.of("orderId", orderRecord.getId().toString(),
+                        "merchantId", orderRecord.getMerchantId(),
+                        "orderStatus", orderRecord.getStatus().name(),
+                        "amountUnits", orderRecord.getAmount().getAmountUnits(),
+                        "amountCurrency", orderRecord.getAmount().getCurrency()
+                        )
+        );
 
         return orderMapper.toOrderResponse(orderRecord);
     }
@@ -76,6 +100,16 @@ public class OrderServiceImpl implements OrderService {
 
         orderRecord.setStatus(OrderStatus.CANCELLED);
         orderRecord = orderRecordRepository.save(orderRecord);
+
+        outboxEventPublisher.publish(EventAggregateType.ORDER, orderRecord.getId(), "ORDER_CANCELLED",
+                Map.of("orderId", orderRecord.getId().toString(),
+                        "merchantId", orderRecord.getMerchantId(),
+                        "orderStatus", orderRecord.getStatus().name(),
+                        "amountUnits", orderRecord.getAmount().getAmountUnits(),
+                        "amountCurrency", orderRecord.getAmount().getCurrency()
+                )
+        );
+
         return orderMapper.toOrderResponse(orderRecord);
     }
 
