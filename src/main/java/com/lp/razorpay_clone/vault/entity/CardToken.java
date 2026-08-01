@@ -32,7 +32,6 @@ public class CardToken extends BaseEntity {
     @Column(nullable = false)
     UUID merchantId;
 
-    @Column(nullable = false)
     UUID customerId;
 
     LocalDateTime revokedAt;

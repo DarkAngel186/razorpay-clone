@@ -38,7 +38,7 @@ public class Customer extends BaseEntity {
     String name;
 
     @Column(length = 20)
-    String contactNumber;
+    String phone;
 
     LocalDateTime deletedAt;
 }
