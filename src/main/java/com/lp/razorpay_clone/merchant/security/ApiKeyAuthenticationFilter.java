@@ -55,6 +55,7 @@ public class ApiKeyAuthenticationFilter extends OncePerRequestFilter {
             final String authHeader = request.getHeader("Authorization");
             if (authHeader == null || !authHeader.startsWith(BASIC_PREFIX)) {
                 filterChain.doFilter(request, response);
+                return;
             }
 
             String[] credentials = decode(authHeader);

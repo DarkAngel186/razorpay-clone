@@ -1,9 +1,7 @@
 package com.lp.razorpay_clone.vault.dto.request;
 
 import com.lp.razorpay_clone.vault.validation.ExpiryYear;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import org.hibernate.validator.constraints.LuhnCheck;
 
 import java.util.UUID;
@@ -19,15 +17,16 @@ public record TokenizeRequest(
         @Pattern(regexp = "^[0-9]{3,4}$", message = "CVV must be 3 or 4 digits")
         String cvv,
 
-        @NotBlank(message = "Expiry Month cannot be blank")
-        @Pattern(regexp = "^(0[1-9]|1[0-2])$", message = "Expiry Month must be between 01 and 12")
+        @NotNull(message = "Expiry Month cannot be blank")
+        @Min(value = 1, message = "Expiry Month must be >= 1")
+        @Max(value = 12, message = "Expiry Month must be <= 12")
         Integer expiryMonth,
 
-        @NotBlank(message = "Expiry Year cannot be blank")
+        @NotNull(message = "Expiry Year cannot be blank")
         @ExpiryYear
         Integer expiryYear,
 
-        @NotBlank(message = "Customer ID cannot be blank")
+        @NotNull(message = "Customer ID cannot be blank")
         UUID customerId,
 
         @Size(min = 2, max = 100, message = "Card Holder Name cannot be blank")

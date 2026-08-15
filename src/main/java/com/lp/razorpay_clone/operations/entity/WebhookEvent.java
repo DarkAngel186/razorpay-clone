@@ -4,7 +4,7 @@ import com.lp.razorpay_clone.common.entity.BaseEntity;
 import com.lp.razorpay_clone.common.enums.WebhookEventStatus;
 import com.lp.razorpay_clone.common.enums.WebhookEventsType;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
@@ -13,7 +13,11 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
+@RequiredArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "webhook_event")
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
@@ -44,6 +48,7 @@ public class WebhookEvent extends BaseEntity {
     WebhookEventStatus status;
 
     @Column(nullable = false)
+    @Builder.Default
     Integer attempts = 0;
 
     Integer lastResponseCode;

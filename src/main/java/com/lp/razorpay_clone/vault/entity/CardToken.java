@@ -14,7 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "vault_card")
+@Table(name = "card_token")
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class CardToken extends BaseEntity {
 
