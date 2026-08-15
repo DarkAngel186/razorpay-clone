@@ -37,11 +37,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (authHeader == null || !authHeader.startsWith("Bearer ")) {
                 log.info("Authorization header missing");
                 filterChain.doFilter(request, response);
+                return;
             }
 
             String jwtToken = authHeader.split("Bearer ")[1];
 
-            Claims claims = jwtUtil.verifyAcsessToken(jwtToken);
+            Claims claims = jwtUtil.verifyAccessToken(jwtToken);
 
             if (claims != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 var auth = new UsernamePasswordAuthenticationToken(

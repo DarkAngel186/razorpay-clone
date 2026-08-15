@@ -13,13 +13,10 @@ import java.util.Base64;
 @Configuration
 public class VaultEncryptionConfig {
 
-    @Value("${vault.master-key}")
-    private String masterKey;
-
     public static BytesEncryptor panEncryptor(byte[] dek) {
         SecretKeySpec secretKey = new SecretKeySpec(dek, "AES");
         return new AesBytesEncryptor(secretKey,
                 KeyGenerators.secureRandom(12),
-                AesBytesEncryptor.CipherAlgorithm.CBC);
+                AesBytesEncryptor.CipherAlgorithm.GCM);
     }
 }

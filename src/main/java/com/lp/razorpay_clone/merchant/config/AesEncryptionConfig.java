@@ -20,8 +20,9 @@ public class AesEncryptionConfig {
     public BytesEncryptor masterKeyEncryptor() {
         byte[] masterKeyBytes = Base64.getDecoder().decode(masterKey);
         SecretKeySpec decKey = new SecretKeySpec(masterKeyBytes, "AES");
+        System.out.println(masterKeyBytes.length);
         return new AesBytesEncryptor(decKey,
                 KeyGenerators.secureRandom(12),
-                AesBytesEncryptor.CipherAlgorithm.CBC);
+                AesBytesEncryptor.CipherAlgorithm.GCM);
     }
 }

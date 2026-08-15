@@ -9,9 +9,11 @@ import com.lp.razorpay_clone.operations.repository.WebhookEventRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.springframework.dao.DataAccessException;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.CannotCreateTransactionException;
 import tools.jackson.databind.ObjectMapper;
 
 import java.time.LocalDateTime;
@@ -29,6 +31,7 @@ public class WebhookKafkaConsumer {
     private final ObjectMapper objectMapper;
     private final SignerUtil signerUtil;
     private final WebhookRetryQueue webhookRetryQueue;
+    private final WebhookDlqRecorder webhookDlqRecorder;
 
     @KafkaListener(topics = {
             "${app.kafka.topics.payment:payments.events}",
@@ -40,9 +43,9 @@ public class WebhookKafkaConsumer {
         try {
             Map<String, Object> envelope = record.value();
             Map<String, Object> data = (Map<String, Object>) envelope.get("data");
-            String eventType = envelope.get("event_type").toString();
+            String eventType = envelope.get("event_Type").toString();
 
-            Object merchantIdRaw = data.get("merchant_id");
+            Object merchantIdRaw = data.get("merchant_Id");
             if (merchantIdRaw == null) {
                 log.warn("merchant_id is null, skipping webhook event : {}", eventType);
                 acknowledgment.acknowledge();
@@ -83,11 +86,16 @@ public class WebhookKafkaConsumer {
 
                 // Enqueue in Redis:
                 webhookRetryQueue.enqueue(webhookEvent.getId(), webhookEvent.getNextRetryAt());
+                log.info("Enqueued webhook event with id {} for delivery to target {}", webhookEvent.getId(), webhookTarget.targetUrl());
             }
             acknowledgment.acknowledge();  // Acknowledge to avoid reprocessing
+        } catch (DataAccessException | CannotCreateTransactionException dbDown) {
+            log.error("Database is down, cannot process webhook event. Will retry later.", dbDown);
+            // Do not acknowledge, so that the message can be retried later
         } catch (Exception e) {
-            log.error("Error processing webhook event: {}, record offset: {}", e.getMessage(), record.offset(), e);
-            // TODO: check exception for acknowledgment. If it's a recoverable error, we might want to not acknowledge and let it retry. For now, we acknowledge to avoid infinite loops.
+            log.error("Error processing webhook event: {}", e.getMessage(), e);
+            webhookDlqRecorder.recordConsumerFailed(record, e.getMessage());
+            acknowledgment.acknowledge();  // Acknowledge to avoid reprocessing of this faulty message
         }
     }
 }

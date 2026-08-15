@@ -34,7 +34,7 @@ public class JwtUtil {
                 .compact();
     }
 
-    public Claims verifyAcsessToken(String token) {
+    public Claims verifyAccessToken(String token) {
         return Jwts.parser()
                 .verifyWith(getSecretKey())
                 .build()

@@ -22,6 +22,8 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
   kafka:
+    listener:
+      ack-mode: manual
     bootstrap-servers: ${KAFKA_BROKERS:localhost:29092}
     producer:
       acks: all
@@ -38,14 +40,14 @@ spring:
       auto-offset-reset: earliest
       enable-auto-commit: false
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonSerializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
         spring.json.trusted.packages: "com.lp.razorpay_clone.*"
         spring.json.use.type.headers: false
         spring.json.value.default.type: java.util.LinkedHashMap
 
 vault:
-  master-key: wJ3k9kFh2s9d8s7d8s9d8s7d8s9d8s7d8s9d8s7d8s9d8s7d8s==
+  master-key: q83zYk7z5vQyFh9h2n3k4t5u6v7w8x9y0z1a2b3c4d5=
 
 payment:
   simulator:
@@ -64,6 +66,10 @@ payment:
         min-delay-seconds: 4
         max-delay-seconds: 10
         success-rate: 80
+
+threads:
+  virtual:
+    enabled: true
 
 jwt:
   secret-key: wJ3k9kFh2s9d8s7d8s9d8s7d8sksldjsdwj2wskmspswofnendjisq

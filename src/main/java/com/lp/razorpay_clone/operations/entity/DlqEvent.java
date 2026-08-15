@@ -2,7 +2,7 @@ package com.lp.razorpay_clone.operations.entity;
 
 import com.lp.razorpay_clone.common.entity.BaseEntity;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
@@ -11,7 +11,11 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 
-@Data
+@Builder
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "dlq_event")
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)

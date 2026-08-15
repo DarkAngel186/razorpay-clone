@@ -48,6 +48,7 @@ public class WebhookEvent extends BaseEntity {
     WebhookEventStatus status;
 
     @Column(nullable = false)
+    @Builder.Default
     Integer attempts = 0;
 
     Integer lastResponseCode;

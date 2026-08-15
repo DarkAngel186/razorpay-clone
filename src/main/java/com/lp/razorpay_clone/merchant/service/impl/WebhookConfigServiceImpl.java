@@ -102,7 +102,8 @@ public class WebhookConfigServiceImpl implements WebhookConfigService, MerchantW
                 .map(config -> new WebhookTarget(
                         config.getTargetUrl(),
                         config.getEventTypes(),
-                        new String(bytesEncryptor.decrypt(config.getWebhookSecret().getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8)
+                        new String(bytesEncryptor.decrypt(Base64.getDecoder().decode(config.getWebhookSecret())),
+                                StandardCharsets.UTF_8)
                 ))
                 .toList();
     }
